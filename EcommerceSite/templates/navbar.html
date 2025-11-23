@@ -1,0 +1,43 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %} Shop{% endblock %}</title>
+
+    
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+
+    
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+
+
+<nav class="main-navbar navbar navbar-expand-lg navbar-dark bg-dark">
+
+    
+    <a class="navbar-brand navbar-logo d-flex align-items-center" href="{% url 'products' %}">
+        <img src="{% static 'images/logo.png' %}" width="45" height="45" class="store-logo">
+        <span class="store-name ml-2">Clothing Shop</span>
+    </a>
+
+    
+    <div class="navbar-menu navbar-nav">
+        <a class="menu-item nav-link" href="{% url 'products' %}">Products</a>
+        <a class="menu-item nav-link" href="{% url 'basket' %}">Basket</a>
+        <a class="menu-item nav-link" href="{% url 'order' %}">Order</a>
+        <a class="menu-item nav-link" href="{% url 'logout' %}">Logout</a>
+    </div>
+
+</nav>
+
+
+<div class="page-content container mt-4">
+    {% block content %}{% endblock %}
+</div>
+
+</body>
+</html>
