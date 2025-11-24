@@ -1,0 +1,30 @@
+{% extends 'navbar.html' %}
+{% block content %}
+
+<h1> All of Our Products:</h1>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Image</th>
+            <th>Price</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for p in products %}
+        <tr>
+            <td>
+                <a href="{% url 'product_details' p.id %}">
+                    {{ p.name }}
+                </a>
+            </td>
+            <td>
+                <img src="{{ p.image.url }}" width="80">
+            </td>
+            <td>{{ p.price }} SR</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

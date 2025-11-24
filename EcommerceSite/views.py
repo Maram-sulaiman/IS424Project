@@ -1,9 +1,13 @@
 from django.shortcuts import render
+from django.shortcuts import redirect
+from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.contrib.auth import authenticate, login
-from django.contrib.auth.models import user
+from django.contrib.auth.models import User
 from .forms import RegisterForm
+from .models import Product
+
 
 
 def login_view(request):
@@ -45,3 +49,27 @@ def register_view(request):
                 "form": form,
                 "hide_menu": True
             })
+
+def products_view(request):
+    products= Product.objects.all()
+    return render (request, 'products.html', {
+        "products":products
+    })
+
+def product_details(request, id):
+    product_list = Product.objects.filter(id=id)
+    product = product_list[0]
+
+    if request.method == "POST":
+        amount= int(request.POST.get["amount"])
+        basket_items= BasketItem.objects.filter(user=request.user, product=product)
+        if len(basket_items)==0:
+            item=BasketItem(user=request.user, product=product, amount=amount)
+            item.save()
+        else:
+            item=basket_items[0]
+            item.amount=item.amount + amount
+            item.save()
+
+        return redirect("basket")
+    return render(request, "EcommerceSite/product_detail.html", {"product": product})
