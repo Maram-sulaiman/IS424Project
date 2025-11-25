@@ -10,4 +10,11 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
-# Create your models here.
+class OrderedProduct(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="ordered_products")
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    amount = models.PositiveIntegerField(default=1)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.product.name} x {self.amount}"
+

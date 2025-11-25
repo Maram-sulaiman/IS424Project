@@ -6,8 +6,7 @@ from django.urls import reverse
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from .forms import RegisterForm
-from .models import Product
-
+from .models import Product, OrderedProduct
 
 
 def login_view(request):
@@ -57,19 +56,21 @@ def products_view(request):
     })
 
 def product_details(request, id):
-    product_list = Product.objects.filter(id=id)
-    product = product_list[0]
+    product = get_object_or_404(Product, id=id)
 
     if request.method == "POST":
-        amount= int(request.POST.get["amount"])
-        basket_items= BasketItem.objects.filter(user=request.user, product=product)
-        if len(basket_items)==0:
-            item=BasketItem(user=request.user, product=product, amount=amount)
+        amount = int(request.POST.get("amount", 1))
+
+        basket_items = OrderedProduct.objects.filter(user=request.user, product=product)
+        if len(basket_items) == 0:
+            item = OrderedProduct(user=request.user, product=product, amount=amount)
             item.save()
         else:
-            item=basket_items[0]
-            item.amount=item.amount + amount
+            item = basket_items[0]
+            item.amount = item.amount + amount
             item.save()
 
-        return redirect("basket")
-    return render(request, "EcommerceSite/product_detail.html", {"product": product})
+        return HttpResponseRedirect(reverse("basket"))
+
+    return render(request, "product_detail.html", {"product": product})
+

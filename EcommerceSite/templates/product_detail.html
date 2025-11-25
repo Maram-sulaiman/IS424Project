@@ -1,0 +1,38 @@
+{% extends "navbar.html" %}
+
+{% block content %}
+<h1>{{ product.name }}</h1>
+
+<div class="row">
+    <div class="col-md-4">
+        <img src="{{ product.image.url }}" class="img-fluid" alt="{{ product.name }}">
+    </div>
+
+    <div class="col-md-8">
+        <p><strong>Description:</strong> {{ product.description }}</p>
+        <p><strong>Price:</strong> {{ product.price }} SR</p>
+
+        <hr>
+
+        <h4>Add to basket</h4>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="amount">Amount:</label>
+                <input type="number" name="amount" id="amount"
+                       value="1" min="1" class="form-control" style="width: 120px;">
+            </div>
+
+            <button type="submit" class="btn btn-success mt-2">
+                Add to basket
+            </button>
+        </form>
+
+         <p class="mt-3">
+            {# <a href="{% url 'basket' %}" class="btn btn-link"> #}
+                Go to shopping basket
+            </a>
+        </p>
+    </div>
+</div>
+{% endblock %}
