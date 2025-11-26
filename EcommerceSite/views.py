@@ -60,17 +60,72 @@ def product_details(request, id):
 
     if request.method == "POST":
         amount = int(request.POST.get("amount", 1))
+        basket = request.session.get("basket", {})
 
-        basket_items = OrderedProduct.objects.filter(user=request.user, product=product)
-        if len(basket_items) == 0:
-            item = OrderedProduct(user=request.user, product=product, amount=amount)
-            item.save()
+        if str(id) in basket:
+            basket[str(id)]["quantity"] += amount
         else:
-            item = basket_items[0]
-            item.amount = item.amount + amount
-            item.save()
+            basket[str(id)] = {
+                "name": product.name,
+                "price": product.price,
+                "quantity": amount
+            }
 
-        return HttpResponseRedirect(reverse("basket"))
+        request.session["basket"] = basket
+        return HttpResponseRedirect(reverse("product_details", args=[id]))
 
     return render(request, "product_detail.html", {"product": product})
 
+def add_to_basket(request, product_id):
+    product = Product.objects.get(id=product_id)
+
+    basket = request.session.get("basket", {})
+
+    if str(product_id) in basket:
+        basket[str(product_id)]["quantity"] += 1
+    else:
+        basket[str(product_id)] = {
+            "name": product.name,
+            "price": product.price,
+            "quantity": 1
+        }
+    request.session["basket"] = basket
+
+    return redirect("basket")
+
+def basket_page(request):
+    basket = request.session.get("basket", {})
+
+    total = sum(item["price"] * item["quantity"] for item in basket.values())
+
+    return render(request, "basket.html", {
+        "basket": basket,
+        "total": total
+    })
+
+def update_quantity(request, product_id):
+    basket = request.session.get("basket", {})
+
+    if request.method == "POST":
+        new_quantity = int(request.POST["quantity"])
+
+        if new_quantity <= 0:
+            basket.pop(str(product_id), None)
+        else:
+            basket[str(product_id)]["quantity"] = new_quantity
+
+    request.session["basket"] = basket
+    return redirect("basket")
+
+def remove_item(request, product_id):
+    basket = request.session.get("basket", {})
+
+    if str(product_id) in basket:
+        basket.pop(str(product_id))
+
+    request.session["basket"] = basket
+    return redirect("basket")
+
+def clear_basket(request):
+    request.session["basket"] = {}
+    return redirect("basket")
