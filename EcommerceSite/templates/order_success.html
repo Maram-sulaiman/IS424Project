@@ -1,0 +1,12 @@
+{% extends "navbar.html" %}
+
+{% block content %}
+
+<h2>Order Completed Successfully!</h2>
+
+<p>Your order number is: <strong>#{{ order.id }}</strong></p>
+<p>Total Price: ${{ order.total_price }}</p>
+
+<a href="{% url 'products' %}" class="btn btn-primary mt-3">Back to Products</a>
+
+{% endblock %}

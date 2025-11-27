@@ -129,3 +129,33 @@ def remove_item(request, product_id):
 def clear_basket(request):
     request.session["basket"] = {}
     return redirect("basket")
+
+def order_page(request):
+    
+    basket = request.session.get("basket", {})
+    total = 0
+    for item in basket.values():
+        total += item["price"] * item["quantity"]
+
+    
+    if request.method == "POST":
+        order = Order.objects.create(
+            user=request.user,
+            total_price=total
+        )
+        for product_id, item in basket.items():
+            OrderedProduct.objects.create(
+                user=request.user,
+                product_id=product_id,
+                amount=item["quantity"]
+            )
+
+        request.session["basket"] = {}
+        return render(request, "order_success.html", {
+            "order": order
+        })
+
+    return render(request, "order.html", {
+        "basket": basket,
+        "total": total
+    })
