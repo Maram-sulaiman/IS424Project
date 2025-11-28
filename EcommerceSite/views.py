@@ -6,8 +6,7 @@ from django.urls import reverse
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from .forms import RegisterForm
-from .models import Product
-
+from .models import Product, OrderedProduct
 
 
 def login_view(request):
@@ -57,19 +56,106 @@ def products_view(request):
     })
 
 def product_details(request, id):
-    product_list = Product.objects.filter(id=id)
-    product = product_list[0]
+    product = get_object_or_404(Product, id=id)
 
     if request.method == "POST":
-        amount= int(request.POST.get["amount"])
-        basket_items= BasketItem.objects.filter(user=request.user, product=product)
-        if len(basket_items)==0:
-            item=BasketItem(user=request.user, product=product, amount=amount)
-            item.save()
-        else:
-            item=basket_items[0]
-            item.amount=item.amount + amount
-            item.save()
+        amount = int(request.POST.get("amount", 1))
+        basket = request.session.get("basket", {})
 
-        return redirect("basket")
-    return render(request, "EcommerceSite/product_detail.html", {"product": product})
+        if str(id) in basket:
+            basket[str(id)]["quantity"] += amount
+        else:
+            basket[str(id)] = {
+                "name": product.name,
+                "price": product.price,
+                "quantity": amount
+            }
+
+        request.session["basket"] = basket
+        return HttpResponseRedirect(reverse("product_details", args=[id]))
+
+    return render(request, "product_detail.html", {"product": product})
+
+def add_to_basket(request, product_id):
+    product = Product.objects.get(id=product_id)
+
+    basket = request.session.get("basket", {})
+
+    if str(product_id) in basket:
+        basket[str(product_id)]["quantity"] += 1
+    else:
+        basket[str(product_id)] = {
+            "name": product.name,
+            "price": product.price,
+            "quantity": 1
+        }
+    request.session["basket"] = basket
+
+    return redirect("basket")
+
+def basket_page(request):
+    basket = request.session.get("basket", {})
+
+    total = sum(item["price"] * item["quantity"] for item in basket.values())
+
+    return render(request, "basket.html", {
+        "basket": basket,
+        "total": total
+    })
+
+def update_quantity(request, product_id):
+    basket = request.session.get("basket", {})
+
+    if request.method == "POST":
+        new_quantity = int(request.POST["quantity"])
+
+        if new_quantity <= 0:
+            basket.pop(str(product_id), None)
+        else:
+            basket[str(product_id)]["quantity"] = new_quantity
+
+    request.session["basket"] = basket
+    return redirect("basket")
+
+def remove_item(request, product_id):
+    basket = request.session.get("basket", {})
+
+    if str(product_id) in basket:
+        basket.pop(str(product_id))
+
+    request.session["basket"] = basket
+    return redirect("basket")
+
+def clear_basket(request):
+    request.session["basket"] = {}
+    return redirect("basket")
+
+def order_page(request):
+    
+    basket = request.session.get("basket", {})
+    total = 0
+    for item in basket.values():
+        total += item["price"] * item["quantity"]
+
+    
+    if request.method == "POST":
+        order = Order.objects.create(
+            user=request.user,
+            total_price=total
+        )
+        for product_id, item in basket.items():
+            OrderedProduct.objects.create(
+                user=request.user,
+                product_id=product_id,
+                amount=item["quantity"]
+            )
+
+        request.session["basket"] = {}
+        return render(request, "order_success.html", {
+            "order": order
+        })
+
+    return render(request, "order.html", {
+        "basket": basket,
+        "total": total
+    })

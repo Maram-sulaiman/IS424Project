@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    
     <title>{% block title %} Shop{% endblock %}</title>
 
     
@@ -20,10 +20,13 @@
 
     
     <a class="navbar-brand navbar-logo d-flex align-items-center" href="{% url 'products' %}">
-        <img src="{% static 'images/logo.png' %}" width="45" height="45" class="store-logo">
-        <span class="store-name ml-2">Clothing Shop</span>
+        <img src="{% static 'images/Book.png' %}" width="45" height="45" class="store-logo">
+        <span class="store-name ml-2">Book store</span>
     </a>
+    <a class="menu-item nav-link" href="{% url 'basket' %}">
+    <img src="{% static 'images/cart.png' %}" width="22">
 
+    </a>
     
     <div class="navbar-menu navbar-nav">
         <a class="menu-item nav-link" href="{% url 'products' %}">Products</a>
