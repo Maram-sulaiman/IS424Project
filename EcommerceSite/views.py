@@ -6,7 +6,7 @@ from django.urls import reverse
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from .forms import RegisterForm
-from .models import Product, OrderedProduct
+from .models import Product, OrderedProduct,Order
 
 
 def login_view(request):
