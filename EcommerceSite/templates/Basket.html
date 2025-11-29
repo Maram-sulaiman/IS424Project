@@ -6,11 +6,9 @@
     
         <img src="{% static 'images/cart.png' %}" width="25" height="25">
 
-        <!-- Title -->
         <h3 class="text-center mb-4">Your Basket</h3>
 
         {% if basket %}
-            <!-- Basket Items -->
             <ul class="list-group mb-3">
                 {% for id, item in basket.items %}
                     <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -37,16 +35,26 @@
                 {% endfor %}
             </ul>
 
-            <!-- Total -->
             <h5 class="text-center mb-3">Total: <strong>${{ total }}</strong></h5>
  
         {% else %}
             <p class="text-center text-muted">Your basket is empty.</p>
         {% endif %}
 
-        <!-- Close Button -->
-        <div class="d-flex justify-content-center mt-3">
-            <a href="{% url 'products' %}" class="btn btn-outline-secondary">✕ Continue Shopping</a>
+        <div class="d-flex justify-content-center mt-3 mb-3">
+            <a href="{% url 'products' %}" class="btn btn-outline-secondary w-100">
+                 Continue Shopping
+            </a>
+        </div>
+
+        <div class="d-flex gap-2">
+            <a href="{% url 'order' %}" class="btn btn-success w-50">
+                Place Order
+            </a>
+
+            <a href="{% url 'clear_basket' %}" class="btn btn-danger w-50">
+                Clear Basket
+            </a>
         </div>
 
     </div>
