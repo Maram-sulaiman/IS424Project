@@ -27,6 +27,12 @@ def login_view(request):
         "hide_menu": True
         })
 
+def logout_view(request):
+    logout(request)
+    messages.info(request, "You have been logged out.")
+    return HttpResponseRedirect(reverse("login"))
+
+
 def register_view(request):
     if request.method == "POST":
         form = RegisterForm(request.POST)

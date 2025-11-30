@@ -4,6 +4,7 @@ from django.urls import path
 
 urlpatterns = [
     path('login/', views.login_view, name='login'),
+    path("logout/", views.logout_view, name="logout"),
     path('register/', views.register_view, name='register'),
     path('products/', views.products_view, name='products'),
     path('product/<int:id>/', views.product_details, name='product_details'),
@@ -12,9 +13,5 @@ urlpatterns = [
     path("basket/update/<int:product_id>/", views.update_quantity, name="update_quantity"),
     path("basket/remove/<int:product_id>/", views.remove_item, name="remove_item"),
     path("basket/clear/", views.clear_basket, name="clear_basket"),
-    path("order/", views.order_page, name="order"),
-
-
-
-    
+    path("order/", views.order_page, name="order"),    
 ]
