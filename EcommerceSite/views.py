@@ -1,8 +1,7 @@
-from django.shortcuts import render
-from django.shortcuts import get_object_or_404
+from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.urls import reverse
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from .forms import RegisterForm
 from .models import Product, OrderedProduct,Order
@@ -29,7 +28,6 @@ def login_view(request):
 
 def logout_view(request):
     logout(request)
-    messages.info(request, "You have been logged out.")
     return HttpResponseRedirect(reverse("login"))
 
 
