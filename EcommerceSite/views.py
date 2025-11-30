@@ -3,6 +3,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
+from django.contrib import messages
 from .forms import RegisterForm
 from .models import Product, OrderedProduct,Order
 
@@ -15,8 +16,10 @@ def login_view(request):
 
         if user:
             login(request, user)
+            messages.success(request, "You have logged in successfully.")
             return HttpResponseRedirect(reverse('products')) 
         else:
+            messages.error(request, "Invalid username or password.")
             return render(request, 'login.html', {
                 "error": "Invalid username or password",
                 "hide_menu": True
@@ -28,6 +31,7 @@ def login_view(request):
 
 def logout_view(request):
     logout(request)
+    messages.info(request, "You have been logged out.")
     return HttpResponseRedirect(reverse("login"))
 
 
@@ -43,6 +47,7 @@ def register_view(request):
             User.objects.create_user(
                 username=username,  password=password, email=email
             )
+            messages.success(request, "Account created successfully. Please log in.")
             return HttpResponseRedirect(reverse('login')) 
     else:
         form = RegisterForm()
@@ -75,8 +80,9 @@ def product_details(request, id):
             }
 
         request.session["basket"] = basket
+        messages.success(request, f"{product.name} added to basket.")
         return HttpResponseRedirect(reverse("product_details", args=[id]))
-
+    
     return render(request, "product_detail.html", {"product": product})
 
 def add_to_basket(request, product_id):
@@ -93,7 +99,6 @@ def add_to_basket(request, product_id):
             "quantity": 1
         }
     request.session["basket"] = basket
-
     return HttpResponseRedirect(reverse("basket"))
 
 def basket_page(request):
@@ -118,6 +123,7 @@ def update_quantity(request, product_id):
             basket[str(product_id)]["quantity"] = new_quantity
 
     request.session["basket"] = basket
+    messages.info(request, "Quantity updated.")
     return HttpResponseRedirect(reverse("basket"))
 
 def remove_item(request, product_id):
@@ -127,10 +133,12 @@ def remove_item(request, product_id):
         basket.pop(str(product_id))
 
     request.session["basket"] = basket
+    messages.info(request, "Item removed from basket.")
     return HttpResponseRedirect(reverse("basket"))
 
 def clear_basket(request):
     request.session["basket"] = {}
+    messages.info(request, "Basket cleared.")
     return HttpResponseRedirect(reverse("basket"))
 
 def order_page(request):

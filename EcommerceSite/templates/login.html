@@ -13,6 +13,14 @@
 
 <body class="login-background bg-light">
 
+{% if messages %}
+<script>
+    {% for message in messages %}
+        alert("{{ message|escapejs }}");
+    {% endfor %}
+</script>
+{% endif %}
+
 <div class="login-container container d-flex justify-content-center align-items-center"
      style="height: 100vh;">
 

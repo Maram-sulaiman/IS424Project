@@ -36,6 +36,13 @@
 
 </nav>
 
+{% if messages %}
+<script>
+    {% for message in messages %}
+        alert("{{ message|escapejs }}");
+    {% endfor %}
+</script>
+{% endif %}
 
 <div class="page-content container mt-4">
     {% block content %}{% endblock %}
