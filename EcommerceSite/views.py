@@ -1,5 +1,4 @@
 from django.shortcuts import render
-from django.shortcuts import redirect
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect
 from django.urls import reverse
@@ -40,7 +39,7 @@ def register_view(request):
             User.objects.create_user(
                 username=username,  password=password, email=email
             )
-            return redirect(reverse('login')) 
+            return HttpResponseRedirect(reverse('login')) 
     else:
         form = RegisterForm()
 
@@ -51,7 +50,7 @@ def register_view(request):
 
 def products_view(request):
     products= Product.objects.all()
-    return render (request, 'products.html', {
+    return render(request, 'products.html', {
         "products":products
     })
 
@@ -91,7 +90,7 @@ def add_to_basket(request, product_id):
         }
     request.session["basket"] = basket
 
-    return redirect("basket")
+    return HttpResponseRedirect(reverse("basket"))
 
 def basket_page(request):
     basket = request.session.get("basket", {})
@@ -115,7 +114,7 @@ def update_quantity(request, product_id):
             basket[str(product_id)]["quantity"] = new_quantity
 
     request.session["basket"] = basket
-    return redirect("basket")
+    return HttpResponseRedirect(reverse("basket"))
 
 def remove_item(request, product_id):
     basket = request.session.get("basket", {})
@@ -124,11 +123,11 @@ def remove_item(request, product_id):
         basket.pop(str(product_id))
 
     request.session["basket"] = basket
-    return redirect("basket")
+    return HttpResponseRedirect(reverse("basket"))
 
 def clear_basket(request):
     request.session["basket"] = {}
-    return redirect("basket")
+    return HttpResponseRedirect(reverse("basket"))
 
 def order_page(request):
     
